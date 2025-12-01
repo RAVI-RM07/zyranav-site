@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEO-Based PNT Navigation System</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton:wght@400&family=Outfit:wght@300;400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons (fixed placement + syntax) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+    <nav class="navbar">
+        <div class="logo">LEO-PNT</div>
+
+        <!-- Hamburger -->
+        <div class="menu-toggle" id="mobile-menu">
+            ☰
+        </div>
+
+        <!-- Navigation Links -->
+        <ul class="nav-links">
+            <li><a href="#Home">Home</a></li>
+            <li><a href="#overview">Product</a></li>
+            <li><a href="#team">Team</a></li>
+            <li><a href="#Contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="Home" class="hero">
+            <div class="hero-layout container">
+                <!-- LEFT COLUMN: Title block -->
+                <div class="hero-copy">
+                    <h1 class="leo-hero-title">
+                        LEO-BASED PNT<br>
+                        NAVIGATION <br>SYSTEM
+                    </h1>
+                    <p class="subtitle hero-subtitle">
+                        Resilient positioning using Low Earth Orbit satellites, engineered for
+                        contested and GNSS-denied environments.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#overview" class="animated-button">
+                            <span class="text">Explore System</span>
+                            <span class="circle"></span>
+                            <svg class="arr-1" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"></path>
+                            </svg>
+                            <svg class="arr-2" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Radar animation -->
+                <div class="hero-radar">
+                    <canvas id="radar-canvas" aria-hidden="true"></canvas>
+                </div>
+            </div>
+        </section>
+
+
+
+
+        <section id="overview" class="section">
+            <!-- detection/video canvas lives here as background -->
+            <canvas id="signal-canvas" aria-hidden="true"></canvas>
+
+            <div class="container">
+                <h2>Product</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">🎯</div>
+                        <h3>Project Goal</h3>
+                        <p>Develop a navigation system that uses LEO satellite signals (like Starlink/OneWeb) for
+                            positioning when GPS is jammed or unavailable.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🛰️</div>
+                        <h3>Why LEO?</h3>
+                        <p>Higher signal power, faster geometry change for rapid convergence, and resistance to
+                            conventional GNSS jamming.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🛡️</div>
+                        <h3>Resilience</h3>
+                        <p>Designed for contested, denied, and degraded environments where traditional GNSS cannot be
+                            trusted.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📡</div>
+                        <h3>Signal Layer</h3>
+                        <p>Captures and processes real LEO downlink signals with Doppler signatures for robust tracking.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🧠</div>
+                        <h3>Navigation Engine</h3>
+                        <p>Doppler-based navigation fused with IMU data delivers continuous state estimates.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h3>Visual Interface</h3>
+                        <p>Raspberry&nbsp;Pi dashboard for live position, velocity, and signal health monitoring.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">⚙️</div>
+                        <h3>Simulation</h3>
+                        <p>Full-stack simulation environment to validate algorithms before deployment.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🌐</div>
+                        <h3>Scalability</h3>
+                        <p>Architecture ready to support multiple LEO constellations and sensor configurations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🚀</div>
+                        <h3>Future Proof</h3>
+                        <p>Built to evolve with emerging LEO networks and next-generation PNT concepts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture" class="section">
+            <div class="container">
+                <h2>System Architecture</h2>
+                <div class="architecture-grid">
+                    <div class="arch-item">
+                        <div class="icon">📡</div>
+                        <h3>Simulation Layer</h3>
+                        <p>Generates synthetic LEO signals with Doppler, noise, and multipath effects using TLE orbits
+                            for robust algorithm testing.</p>
+                    </div>
+                    <div class="arch-item">
+                        <div class="icon">📶</div>
+                        <h3>Signal Front-End</h3>
+                        <p>SDR (HackRF) + LNA + DIY 1615 MHz helical antenna designed to capture real-world LEO
+                            satellite signals.</p>
+                    </div>
+                    <div class="arch-item">
+                        <div class="icon">⚙️</div>
+                        <h3>Navigation Engine</h3>
+                        <p>Doppler-based navigation algorithms fused with IMU data via Kalman Filter. Enables smooth
+                            switching from GNSS to LEO.</p>
+                    </div>
+                    <div class="arch-item">
+                        <div class="icon">🖥️</div>
+                        <h3>Output Layer</h3>
+                        <p>GUI running on Raspberry Pi displaying real-time position, velocity, and signal status
+                            metrics.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="algorithms" class="section">
+            <div class="container">
+                <h2>Algorithms</h2>
+                <ul class="feature-list">
+                    <li><strong>Doppler Extraction:</strong> Precise frequency shift measurement from LEO carrier
+                        signals.</li>
+                    <li><strong>Orbit Propagation:</strong> Real-time satellite position calculation using TLE data.
+                    </li>
+                    <li><strong>Measurement Filtering:</strong> Signal processing to reduce noise and multipath errors.
+                    </li>
+                    <li><strong>Multi-Sensor Fusion:</strong> Extended Kalman Filter (EKF) combining Doppler
+                        measurements with IMU data for continuous tracking.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="hardware" class="section">
+            <div class="container">
+                <h2>Hardware Stack</h2>
+                <div class="hardware-showcase">
+                    <div class="hw-item">
+                        <h4>Compute</h4>
+                        <p>Raspberry Pi 5</p>
+                    </div>
+                    <div class="hw-item">
+                        <h4>SDR</h4>
+                        <p>HackRF One + LNA</p>
+                    </div>
+                    <div class="hw-item">
+                        <h4>Sensors</h4>
+                        <p>NEO-M8N GNSS, MPU6050/6500 IMU</p>
+                    </div>
+                    <div class="hw-item">
+                        <h4>Antenna</h4>
+                        <p>DIY Helical (1615 MHz, 6-8 turns)</p>
+                    </div>
+                    <div class="hw-item">
+                        <h4>Power</h4>
+                        <p>USB-C 5V / PoE</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="prototypes" class="section">
+            <div class="container">
+                <h2>Prototypes</h2>
+                <div class="grid-3">
+                    <div class="proto-card">
+                        <h3>Test Device</h3>
+                        <p>Integrated Pi + GNSS + IMU unit housed in a custom 3D printed case for field testing.</p>
+                    </div>
+                    <div class="proto-card">
+                        <h3>Simulation Env</h3>
+                        <p>Full Python environment for validating navigation algorithms before field deployment.</p>
+                    </div>
+                    <div class="proto-card">
+                        <h3>Signal Capture</h3>
+                        <p>SDR-based setup for recording and processing live LEO satellite signals.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="results" class="section">
+            <div class="container">
+                <h2>Results & Future Work</h2>
+                <div class="grid-2">
+                    <div class="result-box">
+                        <h3>Current Results</h3>
+                        <p>Successfully demonstrated Doppler curve extraction and initial position convergence using
+                            synthetic and recorded data. Sensor fusion stabilizes the track during signal gaps.</p>
+                    </div>
+                    <div class="result-box">
+                        <h3>Future Work</h3>
+                        <p>Refining real-time processing efficiency, improving antenna gain, and conducting extensive
+                            field trials in urban canyon environments.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="team" class="section">
+            <div class="container">
+                <h2>Team</h2>
+                <div class="team-grid">
+                        <div class="card" data-member="alex">
+                        <div class="blob"></div>
+                        <span class="img"><img src="https://i.pravatar.cc/150?img=12" alt="Alex"></span>
+                        <h2>Alex<br /><span>Engineer</span></h2>
+
+                        <!-- social bar (hidden until hover / touch) -->
+                        <div class="social">
+                            <a class="social-link" data-type="linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener"
+                                aria-label="LinkedIn">
+                                <!-- LinkedIn SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM9 8h4.8v2.2h.1c.7-1.3 2.5-2.7 5.1-2.7C24 7.5 24 12 24 17.3V24h-5v-6.4c0-1.6 0-3.7-2.3-3.7S13 16 13 17.8V24H9V8z">
+                                    </path>
+                                </svg>
+                            </a>
+                            <a class="social-link" data-type="email" href="mailto:alex@example.com" aria-label="Email">
+                                <!-- Email SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M12 13L2 6.76V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.76L12 13zM12 11L22 4H2l10 7z">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="blob"></div>
+                        <span class="img"><img src="https://i.pravatar.cc/150?img=22" alt="profile 2"></span>
+                        <h2>Sam<br /><span>Product</span></h2>
+                        <p><!-- icons --></p>
+                        <!-- social bar (hidden until hover / touch) -->
+                        <div class="social">
+                            <a class="social-link" data-type="linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener"
+                                aria-label="LinkedIn">
+                                <!-- LinkedIn SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM9 8h4.8v2.2h.1c.7-1.3 2.5-2.7 5.1-2.7C24 7.5 24 12 24 17.3V24h-5v-6.4c0-1.6 0-3.7-2.3-3.7S13 16 13 17.8V24H9V8z">
+                                    </path>
+                                </svg>
+                            </a>
+                            <a class="social-link" data-type="email" href="mailto:alex@example.com" aria-label="Email">
+                                <!-- Email SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M12 13L2 6.76V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.76L12 13zM12 11L22 4H2l10 7z">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="blob"></div>
+                        <span class="img"><img src="https://i.pravatar.cc/150?img=32" alt="profile 3"></span>
+                        <h2>Riya<br /><span>Design</span></h2>
+                        <p><!-- icons --></p>
+                        <!-- social bar (hidden until hover / touch) -->
+                        <div class="social">
+                            <a class="social-link" data-type="linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener"
+                                aria-label="LinkedIn">
+                                <!-- LinkedIn SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM9 8h4.8v2.2h.1c.7-1.3 2.5-2.7 5.1-2.7C24 7.5 24 12 24 17.3V24h-5v-6.4c0-1.6 0-3.7-2.3-3.7S13 16 13 17.8V24H9V8z">
+                                    </path>
+                                </svg>
+                            </a>
+                            <a class="social-link" data-type="email" href="mailto:alex@example.com" aria-label="Email">
+                                <!-- Email SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M12 13L2 6.76V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.76L12 13zM12 11L22 4H2l10 7z">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="blob"></div>
+                        <span class="img"><img src="https://i.pravatar.cc/150?img=42" alt="profile 4"></span>
+                        <h2>Omar<br /><span>Research</span></h2>
+                        <p><!-- icons --></p>
+                        <!-- social bar (hidden until hover / touch) -->
+                        <div class="social">
+                            <a class="social-link" data-type="linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener"
+                                aria-label="LinkedIn">
+                                <!-- LinkedIn SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM9 8h4.8v2.2h.1c.7-1.3 2.5-2.7 5.1-2.7C24 7.5 24 12 24 17.3V24h-5v-6.4c0-1.6 0-3.7-2.3-3.7S13 16 13 17.8V24H9V8z">
+                                    </path>
+                                </svg>
+                            </a>
+                            <a class="social-link" data-type="email" href="mailto:alex@example.com" aria-label="Email">
+                                <!-- Email SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M12 13L2 6.76V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.76L12 13zM12 11L22 4H2l10 7z">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="blob"></div>
+                        <span class="img"><img src="https://i.pravatar.cc/150?img=52" alt="profile 5"></span>
+                        <h2>Lee<br /><span>HW</span></h2>
+                        <p><!-- icons --></p>
+                        <!-- social bar (hidden until hover / touch) -->
+                        <div class="social">
+                            <a class="social-link" data-type="linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener"
+                                aria-label="LinkedIn">
+                                <!-- LinkedIn SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM9 8h4.8v2.2h.1c.7-1.3 2.5-2.7 5.1-2.7C24 7.5 24 12 24 17.3V24h-5v-6.4c0-1.6 0-3.7-2.3-3.7S13 16 13 17.8V24H9V8z">
+                                    </path>
+                                </svg>
+                            </a>
+                            <a class="social-link" data-type="email" href="mailto:alex@example.com" aria-label="Email">
+                                <!-- Email SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M12 13L2 6.76V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.76L12 13zM12 11L22 4H2l10 7z">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="blob"></div>
+                        <span class="img"><img src="https://i.pravatar.cc/150?img=62" alt="profile 6"></span>
+                        <h2>Maya<br /><span>Ops</span></h2>
+                        <p><!-- icons --></p>
+                         <!-- social bar (hidden until hover / touch) -->
+                        <div class="social">
+                            <a class="social-link" data-type="linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener"
+                                aria-label="LinkedIn">
+                                <!-- LinkedIn SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM9 8h4.8v2.2h.1c.7-1.3 2.5-2.7 5.1-2.7C24 7.5 24 12 24 17.3V24h-5v-6.4c0-1.6 0-3.7-2.3-3.7S13 16 13 17.8V24H9V8z">
+                                    </path>
+                                </svg>
+                            </a>
+                            <a class="social-link" data-type="email" href="mailto:alex@example.com" aria-label="Email">
+                                <!-- Email SVG -->
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor"
+                                        d="M12 13L2 6.76V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.76L12 13zM12 11L22 4H2l10 7z">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mentors" class="section">
+            <div class="container">
+                <h2>Mentors</h2>
+                <div class="team-grid">
+                    <div class="card mentor-card">
+                        <div class="blob"></div>
+                        <span class="img"><img src="https://i.pravatar.cc/150?img=7" alt="Mentor 1"></span>
+                        <h2>Dr. Chen<br /><span>Navigation</span></h2>
+                        <p></p>
+                        <div class="social">
+                            <a class="social-link" data-type="linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn">
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM9 8h4.8v2.2h.1c.7-1.3 2.5-2.7 5.1-2.7C24 7.5 24 12 24 17.3V24h-5v-6.4c0-1.6 0-3.7-2.3-3.7S13 16 13 17.8V24H9V8z"></path>
+                                </svg>
+                            </a>
+                            <a class="social-link" data-type="email" href="mailto:mentor1@example.com" aria-label="Email">
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor" d="M12 13L2 6.76V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.76L12 13zM12 11L22 4H2l10 7z"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card mentor-card">
+                        <div class="blob"></div>
+                        <span class="img"><img src="https://i.pravatar.cc/150?img=8" alt="Mentor 2"></span>
+                        <h2>Prof. Singh<br /><span>Systems</span></h2>
+                        <p></p>
+                        <div class="social">
+                             <a class="social-link" data-type="linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn">
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM9 8h4.8v2.2h.1c.7-1.3 2.5-2.7 5.1-2.7C24 7.5 24 12 24 17.3V24h-5v-6.4c0-1.6 0-3.7-2.3-3.7S13 16 13 17.8V24H9V8z"></path>
+                                </svg>
+                            </a>
+                             <a class="social-link" data-type="email" href="mailto:mentor2@example.com" aria-label="Email">
+                                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                                    <path fill="currentColor" d="M12 13L2 6.76V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6.76L12 13zM12 11L22 4H2l10 7z"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add Contact section before footer -->
+        <section id="Contact" class="section">
+            <div class="container">
+              <h2>Contact Us</h2>
+          
+              <ul class="example-2">
+          
+                <!-- LINKEDIN -->
+                <li class="icon-content">
+                  <a href="https://www.linkedin.com/in/your-profile" aria-label="LinkedIn" data-social="linkedin" target="_blank" rel="noopener">
+                    <div class="filled"></div>
+                    <i class="bi bi-linkedin"></i>
+                  </a>
+                  <div class="tooltip">LinkedIn</div>
+                </li>
+          
+                <!-- INSTAGRAM -->
+                <li class="icon-content">
+                  <a href="https://instagram.com/your-handle" aria-label="Instagram" data-social="instagram" target="_blank" rel="noopener">
+                    <div class="filled"></div>
+                    <i class="bi bi-instagram"></i>
+                  </a>
+                  <div class="tooltip">Instagram</div>
+                </li>
+          
+                <!-- EMAIL -->
+                <li class="icon-content">
+                  <a href="mailto:contact@leopnt.com" aria-label="Email" data-social="email">
+                    <div class="filled"></div>
+                    <i class="bi bi-envelope"></i>
+                  </a>
+                  <div class="tooltip">Email</div>
+                </li>
+          
+              </ul>
+            </div>
+            
+          </section>
+          
+                    
+    </main>
+
+    <footer>
+        <div class="rights">
+            <p>&copy; <span id="year"></span >  <br>LEO-Based PNT Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
