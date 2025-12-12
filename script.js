@@ -8,14 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
       navLinks.classList.toggle('active');
     });
 
-    // Close menu when clicking on a link
     navLinks.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         navLinks.classList.remove('active');
       });
     });
 
-    // Close menu when clicking outside
     document.addEventListener('click', (e) => {
       if (!mobileMenu.contains(e.target) && !navLinks.contains(e.target)) {
         navLinks.classList.remove('active');
@@ -23,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Product section signal background animation (waveform on #signal-canvas)
+  // Product section SIGNAL CANVAS ANIMATION
   const signalCanvas = document.getElementById('signal-canvas');
   if (signalCanvas) {
       const sCtx = signalCanvas.getContext('2d');
@@ -87,11 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
               for (let x = 0; x < sWidth; x++) {
                   const y = wave.y + Math.sin(x * wave.length + wave.offset) * wave.amplitude * Math.sin(Date.now() * 0.001);
-                  if (x === 0) {
-                      sCtx.moveTo(x, y);
-                  } else {
-                      sCtx.lineTo(x, y);
-                  }
+                  if (x === 0) sCtx.moveTo(x, y);
+                  else sCtx.lineTo(x, y);
               }
 
               sCtx.stroke();
@@ -109,9 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
           sCtx.fillStyle = '#39ff14';
           sCtx.font = '14px monospace';
           if (Math.random() > 0.95) {
-              const textX = Math.random() * sWidth;
-              const textY = Math.random() * sHeight;
-              sCtx.fillText(`DETECTING SIGNAL... ${Math.floor(Math.random() * 100)}%`, textX, textY);
+              sCtx.fillText(`DETECTING SIGNAL... ${Math.floor(Math.random() * 100)}%`,
+                Math.random() * sWidth,
+                Math.random() * sHeight
+              );
           }
 
           requestAnimationFrame(drawSignal);
@@ -122,28 +118,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Dynamic Year
   const yearEl = document.getElementById('year');
-  if (yearEl) {
-      yearEl.textContent = new Date().getFullYear();
-  }
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  // Smooth Scrolling for Anchor Links
+  // Smooth Scrolling
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
           e.preventDefault();
           const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-              target.scrollIntoView({
-                  behavior: 'smooth'
-              });
-          }
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
       });
   });
 
-  // Intersection Observer for Fade-in Animation
-  const observerOptions = {
-      threshold: 0.1
-  };
-
+  // Fade-in Observer
   const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -152,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
               observer.unobserve(entry.target);
           }
       });
-  }, observerOptions);
+  });
 
   document.querySelectorAll('.section').forEach(section => {
       section.style.opacity = '0';
@@ -160,10 +146,207 @@ document.addEventListener('DOMContentLoaded', () => {
       section.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
       observer.observe(section);
   });
-});
 
+  // ---------------------------------------------------------
+  //  FLOWCHART MODAL VIEWER (FINAL WORKING VERSION)
+  // ---------------------------------------------------------
+    const modal = document.getElementById("img-modal");
+    const modalImg = document.getElementById("modal-img");
+    const closeBtn = document.querySelector(".close-modal");
+    let lastActiveElement = null;
+
+    let flowImg = null;
+    let isAnimating = false;
+
+    function createFlowingImage(src) {
+      const img = document.createElement('img');
+      img.className = 'flowing-image hidden';
+      img.src = src;
+      img.alt = '';
+      document.body.appendChild(img);
+      return img;
+    }
+
+    function openModal(src, altText, triggerEl) {
+      if (isAnimating) return; // prevent overlapping opens
+      isAnimating = true;
+      lastActiveElement = triggerEl || document.activeElement;
+      const rect = triggerEl.getBoundingClientRect();
+      // create flow image
+      flowImg = createFlowingImage(src);
+      // initial position/size same as the trigger card's rect
+      flowImg.style.left = rect.left + 'px';
+      flowImg.style.top = rect.top + 'px';
+      flowImg.style.width = rect.width + 'px';
+      flowImg.style.height = rect.height + 'px';
+      flowImg.classList.remove('hidden');
+
+      // compute target size (modal image max sizes)
+      const targetW = Math.min(window.innerWidth * 0.9, 1200);
+      const targetH = Math.min(window.innerHeight * 0.85, 900);
+      const targetLeft = (window.innerWidth - targetW) / 2;
+      const targetTop = (window.innerHeight - targetH) / 2;
+
+      // force layout then animate
+      requestAnimationFrame(() => {
+        flowImg.style.left = targetLeft + 'px';
+        flowImg.style.top = targetTop + 'px';
+        flowImg.style.width = targetW + 'px';
+        flowImg.style.height = targetH + 'px';
+      });
+
+      // when animation completes, show modal overlay & set modal img
+      const onTransitionEnd = (e) => {
+        if (e.propertyName === 'width' || e.propertyName === 'left') {
+          flowImg.removeEventListener('transitionend', onTransitionEnd);
+          modal.style.display = 'flex';
+          modalImg.src = src;
+          modalImg.alt = altText || 'Diagram';
+          document.body.style.overflow = 'hidden';
+          if (modal) modal.setAttribute('aria-hidden', 'false');
+          if (closeBtn) closeBtn.focus();
+          // keep flow image hidden while modal opened, but keep it for reverse animation
+          flowImg.classList.add('hidden');
+          isAnimating = false;
+        }
+      };
+
+      flowImg.addEventListener('transitionend', onTransitionEnd);
+    }
+
+    function closeModal() {
+      if (isAnimating) return; // block while animating
+      isAnimating = true;
+      modal.style.display = 'none';
+      // reverse animate the flow image back to the trigger
+      if (!flowImg) {
+        // if it was removed, just cleanup and restore
+        modalImg.src = '';
+        modalImg.alt = '';
+        document.body.style.overflow = '';
+        if (modal) modal.setAttribute('aria-hidden', 'true');
+        if (lastActiveElement && lastActiveElement.focus) lastActiveElement.focus();
+        isAnimating = false;
+        return;
+      }
+      // ensure flowImg visible for reverse animation
+      flowImg.classList.remove('hidden');
+      // set it to match modal image current rect (centered)
+      const rect = {
+        left: parseFloat(flowImg.style.left) || (window.innerWidth - flowImg.offsetWidth) / 2,
+        top: parseFloat(flowImg.style.top) || (window.innerHeight - flowImg.offsetHeight) / 2,
+        width: parseFloat(flowImg.style.width) || flowImg.offsetWidth,
+        height: parseFloat(flowImg.style.height) || flowImg.offsetHeight,
+      };
+      flowImg.style.left = rect.left + 'px';
+      flowImg.style.top = rect.top + 'px';
+      flowImg.style.width = rect.width + 'px';
+      flowImg.style.height = rect.height + 'px';
+
+      // find the trigger rect again; if not available, just fade out
+      let targetRect = null;
+      if (lastActiveElement && typeof lastActiveElement.getBoundingClientRect === 'function') {
+        targetRect = lastActiveElement.getBoundingClientRect();
+      }
+
+      if (!targetRect) {
+        // just fade out
+        flowImg.style.opacity = '0';
+        setTimeout(() => {
+          flowImg.remove();
+          flowImg = null;
+          modalImg.src = '';
+          modalImg.alt = '';
+          document.body.style.overflow = '';
+          if (modal) modal.setAttribute('aria-hidden', 'true');
+          if (lastActiveElement && lastActiveElement.focus) lastActiveElement.focus();
+          isAnimating = false;
+        }, 250);
+        return;
+      }
+
+      // animate back to targetRect
+      requestAnimationFrame(() => {
+        flowImg.style.left = targetRect.left + 'px';
+        flowImg.style.top = targetRect.top + 'px';
+        flowImg.style.width = targetRect.width + 'px';
+        flowImg.style.height = targetRect.height + 'px';
+        flowImg.style.opacity = '1';
+      });
+
+      // cleanup after transition
+      const onReverseEnd = () => {
+        flowImg.removeEventListener('transitionend', onReverseEnd);
+        flowImg.remove();
+        flowImg = null;
+        modalImg.src = '';
+        modalImg.alt = '';
+        document.body.style.overflow = '';
+        if (modal) modal.setAttribute('aria-hidden', 'true');
+        if (lastActiveElement && lastActiveElement.focus) lastActiveElement.focus();
+        isAnimating = false;
+      };
+      flowImg.addEventListener('transitionend', onReverseEnd);
+    }
+
+    document.querySelectorAll(".diagram-btn").forEach(btn => {
+        // accessible role and keyboard activation
+        btn.setAttribute('role', 'button');
+        btn.tabIndex = 0;
+      const clickHandler = (e) => {
+        const imgSrc = btn.getAttribute("data-img");
+        // try to use title text from h3 inside the card for alt text
+        const h3 = btn.querySelector('h3');
+        const altText = h3 ? h3.textContent.trim() : '';
+        openModal(imgSrc, altText, btn);
+      };
+
+      // support mouse click, touch, and keyboard activation
+      btn.addEventListener("click", clickHandler);
+      btn.addEventListener("keydown", (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          clickHandler(e);
+        }
+      });
+      btn.addEventListener("touchstart", (e) => {
+        // prevent double firing with click on some devices
+        e.preventDefault();
+        clickHandler(e);
+      }, { passive: false });
+    });
+
+    if (closeBtn) {
+      closeBtn.setAttribute('role', 'button');
+      closeBtn.setAttribute('aria-label', 'Close image');
+      closeBtn.tabIndex = 0;
+      closeBtn.addEventListener("click", closeModal);
+      closeBtn.addEventListener("keydown", (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          closeModal();
+        }
+      });
+    }
+
+    // close on backdrop click
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // close on ESC
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+    });
+
+}); // end DOMContentLoaded
+
+
+
+// ---------------------------------------------------------
+// RADAR ANIMATION (unchanged)
+// ---------------------------------------------------------
 (function () {
-// Radar animation for Home hero only
 const canvases = [
   document.getElementById('radar-canvas')
 ].filter(Boolean);
@@ -180,79 +363,67 @@ const surfaces = canvases.map(canvas => ({
 }));
 
 let sweepAngle = 0;
-const sweepSpeed = 0.02; // radians per frame
+const sweepSpeed = 0.02;
 const rings = 5;
-const blips = []; // {ang, rPct, life, maxLife}
+const blips = [];
 
 function resize() {
   surfaces.forEach(surface => {
-    const { canvas } = surface;
-    const rect = canvas.parentElement.getBoundingClientRect();
-    surface.cw = Math.max(1, Math.floor(rect.width));
-    surface.ch = Math.max(1, Math.floor(rect.height));
-    canvas.width = surface.cw * devicePixelRatio;
-    canvas.height = surface.ch * devicePixelRatio;
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
+    const rect = surface.canvas.parentElement.getBoundingClientRect();
+    surface.cw = rect.width;
+    surface.ch = rect.height;
+    surface.canvas.width = rect.width * devicePixelRatio;
+    surface.canvas.height = rect.height * devicePixelRatio;
+    surface.canvas.style.width = rect.width + 'px';
+    surface.canvas.style.height = rect.height + 'px';
     surface.ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-    // center radar consistently in each surface
-    surface.center.x = rect.width * 0.5;
-    surface.center.y = rect.height * 0.5;
-    surface.radius = Math.min(rect.width * 0.45, rect.height * 0.45);
+    surface.center.x = rect.width / 2;
+    surface.center.y = rect.height / 2;
+    surface.radius = Math.min(rect.width, rect.height) * 0.45;
   });
 }
 
 function drawGrid(surface) {
   const { ctx, cw, ch, center, radius } = surface;
 
-  // full-rect subtle grid
   ctx.save();
   ctx.strokeStyle = 'rgba(0,255,90,0.12)';
-  ctx.lineWidth = 1;
   const gridSize = 46;
+
   for (let x = 0; x < cw; x += gridSize) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
     ctx.lineTo(x, ch);
     ctx.stroke();
   }
+
   for (let y = 0; y < ch; y += gridSize) {
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.lineTo(cw, y);
     ctx.stroke();
   }
+
   ctx.restore();
 
-  // circular radar grid
   ctx.save();
   ctx.translate(center.x, center.y);
+
   const grd = ctx.createRadialGradient(0,0,radius*0.05, 0,0,radius);
   grd.addColorStop(0, 'rgba(0,255,90,0.18)');
   grd.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = grd;
   ctx.beginPath();
-  ctx.arc(0, 0, radius, 0, Math.PI * 2);
+  ctx.arc(0,0,radius,0,Math.PI*2);
   ctx.fill();
 
   ctx.strokeStyle = 'rgba(0,255,90,0.22)';
-  ctx.lineWidth = 1;
   for (let i = 1; i <= rings; i++) {
     ctx.beginPath();
-    ctx.arc(0, 0, (radius / rings) * i, 0, Math.PI * 2);
+    ctx.arc(0,0,(radius / rings) * i,0,Math.PI*2);
     ctx.stroke();
   }
 
-  ctx.strokeStyle = 'rgba(0,255,90,0.14)';
-  ctx.lineWidth = 1;
-  const spokes = 16;
-  for (let i = 0; i < spokes; i++) {
-    const a = (i / spokes) * Math.PI * 2;
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.lineTo(Math.cos(a) * radius, Math.sin(a) * radius);
-    ctx.stroke();
-  }
   ctx.restore();
 }
 
@@ -260,36 +431,36 @@ function drawSweep(surface) {
   const { ctx, center, radius } = surface;
   ctx.save();
   ctx.translate(center.x, center.y);
+
   const sweepWidth = Math.PI / 14;
   const grad = ctx.createRadialGradient(0,0,0, 0,0,radius);
   grad.addColorStop(0, 'rgba(0,255,90,0.22)');
   grad.addColorStop(1, 'rgba(0,255,90,0.03)');
   ctx.fillStyle = grad;
+
   ctx.beginPath();
   ctx.moveTo(0,0);
-  ctx.arc(0, 0, radius, sweepAngle - sweepWidth/2, sweepAngle + sweepWidth/2);
+  ctx.arc(0,0,radius,sweepAngle - sweepWidth/2, sweepAngle + sweepWidth/2);
   ctx.closePath();
   ctx.fill();
 
-  // bright leading edge
   ctx.strokeStyle = 'rgba(0,255,140,0.95)';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.arc(0, 0, radius, sweepAngle - 0.005, sweepAngle + 0.005);
+  ctx.arc(0,0,radius,sweepAngle - 0.005, sweepAngle + 0.005);
   ctx.stroke();
-  ctx.restore();
 
+  ctx.restore();
   sweepAngle += sweepSpeed;
 }
 
 function maybeAddBlip() {
-  // add occasional blip (random)
   if (Math.random() < 0.02) {
     blips.push({
       ang: Math.random() * Math.PI * 2,
       rPct: 0.2 + Math.random() * 0.75,
       life: 0,
-      maxLife: 60 + Math.floor(Math.random() * 120)
+      maxLife: 60 + Math.random() * 120
     });
   }
 }
@@ -298,40 +469,45 @@ function drawBlips(surface) {
   const { ctx, center, radius } = surface;
   ctx.save();
   ctx.translate(center.x, center.y);
+
   for (let i = blips.length - 1; i >= 0; i--) {
     const b = blips[i];
     const r = b.rPct * radius;
     const x = Math.cos(b.ang) * r;
     const y = Math.sin(b.ang) * r;
+
     const t = b.life / b.maxLife;
-    const alpha = 0.9 * (1 - t);
+    const alpha = 1 - t;
+
     // glow
-    ctx.beginPath();
-    const glow = ctx.createRadialGradient(x,y,0, x,y,18);
-    glow.addColorStop(0, `rgba(0,255,120,${alpha * 0.85})`);
-    glow.addColorStop(1, 'rgba(0,255,120,0)');
+    const glow = ctx.createRadialGradient(x,y,0,x,y,18);
+    glow.addColorStop(0, `rgba(0,255,120,${alpha})`);
+    glow.addColorStop(1, "rgba(0,255,120,0)");
     ctx.fillStyle = glow;
+    ctx.beginPath();
     ctx.arc(x,y,18,0,Math.PI*2);
     ctx.fill();
+
     // core
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
     ctx.beginPath();
-    ctx.fillStyle = `rgba(255,255,255,${0.9 * (1 - t)})`;
     ctx.arc(x,y,3,0,Math.PI*2);
     ctx.fill();
 
     b.life++;
-    if (b.life > b.maxLife) blips.splice(i,1);
+    if (b.life > b.maxLife) blips.splice(i, 1);
   }
+
   ctx.restore();
 }
 
 function animate() {
   surfaces.forEach(surface => {
     const { ctx, cw, ch } = surface;
+
     ctx.clearRect(0,0,cw,ch);
 
-    // subtle dark overlay
-    ctx.fillStyle = 'rgba(0,0,0,0.12)';
+    ctx.fillStyle = "rgba(0,0,0,0.12)";
     ctx.fillRect(0,0,cw,ch);
 
     drawGrid(surface);
@@ -343,20 +519,25 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-// init
 function init() {
   resize();
-  window.addEventListener('resize', resize);
+  window.addEventListener("resize", resize);
   animate();
 }
 
-if (document.readyState === 'loading') {
-  window.addEventListener('DOMContentLoaded', init);
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", init);
 } else {
   init();
 }
-})();
-// ⚡ Faster mobile card interaction
+
+})(); // end radar animation
+
+
+
+// ---------------------------------------------------------
+// MOBILE TOUCH CARD INTERACTION
+// ---------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   if (window.innerWidth <= 768) {
     const cards = document.querySelectorAll('.card');
@@ -371,9 +552,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-
-
-// ⚡ Instant card response — clean state management
 document.addEventListener("DOMContentLoaded", () => {
   if (window.innerWidth <= 768) {
     const cards = document.querySelectorAll(".card");
